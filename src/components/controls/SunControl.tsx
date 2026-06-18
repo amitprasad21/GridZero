@@ -52,14 +52,14 @@ export const SunControl: React.FC = () => {
   const currentDate = new Date(autoDateTimestamp);
   const dateString = currentDate.toISOString().split('T')[0];
 
-  // Convert current time to minutes from midnight for the time slider (range: 6:00 to 20:00 = 360 to 1200)
-  const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+  // Convert current time to minutes from midnight for the time slider (range: 6:00 to 20:00 = 360 to 1200) in UTC
+  const currentMinutes = currentDate.getUTCHours() * 60 + currentDate.getUTCMinutes();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.value) return;
     const [year, month, day] = e.target.value.split('-').map(Number);
     const newDate = new Date(autoDateTimestamp);
-    newDate.setFullYear(year, month - 1, day);
+    newDate.setUTCFullYear(year, month - 1, day);
     setAutoDateTimestamp(newDate.getTime());
   };
 
@@ -68,7 +68,7 @@ export const SunControl: React.FC = () => {
     const hours = Math.floor(totalMins / 60);
     const mins = totalMins % 60;
     const newDate = new Date(autoDateTimestamp);
-    newDate.setHours(hours, mins, 0, 0);
+    newDate.setUTCHours(hours, mins, 0, 0);
     setAutoDateTimestamp(newDate.getTime());
   };
 
@@ -80,7 +80,7 @@ export const SunControl: React.FC = () => {
     return `${displayHours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')} ${ampm}`;
   };
 
-  const currentHour = new Date(autoDateTimestamp).getHours();
+  const currentHour = new Date(autoDateTimestamp).getUTCHours();
   const isMorningActive = simulationMode === 'auto' && currentHour >= 6 && currentHour < 18;
   const isNightActive = simulationMode === 'auto' && (currentHour >= 18 || currentHour < 6);
 

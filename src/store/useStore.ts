@@ -119,9 +119,8 @@ export const useStore = create<StoreState>((set) => {
     }
   ];
 
-  // Noon local time for standard start
-  const initialDate = new Date();
-  initialDate.setHours(12, 0, 0, 0);
+  // Stable UTC Date for standard start (June 18, 2026, 12:00 PM UTC)
+  const initialDate = new Date(Date.UTC(2026, 5, 18, 12, 0, 0, 0));
 
   const initialLocation = LOCATION_PRESETS[0]; // Los Angeles
 
@@ -363,13 +362,13 @@ export const useStore = create<StoreState>((set) => {
         if (!state.isSimulating) return {};
 
         const currentDate = new Date(state.autoDateTimestamp);
-        // Advance time by simulationSpeed (minutes)
-        currentDate.setMinutes(currentDate.getMinutes() + state.simulationSpeed);
+        // Advance time by simulationSpeed (minutes) in UTC
+        currentDate.setUTCMinutes(currentDate.getUTCMinutes() + state.simulationSpeed);
 
-        // If it goes past 8:00 PM, loop back to 6:00 AM
-        const hour = currentDate.getHours();
+        // If it goes past 8:00 PM, loop back to 6:00 AM UTC
+        const hour = currentDate.getUTCHours();
         if (hour >= 20 || hour < 6) {
-          currentDate.setHours(6, 0, 0, 0);
+          currentDate.setUTCHours(6, 0, 0, 0);
         }
 
         return runUpdate({
