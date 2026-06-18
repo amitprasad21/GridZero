@@ -58,8 +58,11 @@ export default function Home() {
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
-      <div className="min-h-screen bg-slate-50 dark:bg-[#070a13] text-slate-800 dark:text-slate-100 transition-colors duration-300">
-        
+      <div className="min-h-screen bg-slate-50 dark:bg-[#070a13] tech-grid text-slate-800 dark:text-slate-100 transition-colors duration-300 relative overflow-hidden">
+        {/* Ambient Glowing Background Blobs */}
+        <div className="absolute top-[10%] left-[15%] w-[32rem] h-[32rem] rounded-full bg-emerald-500/5 dark:bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-[20%] right-[10%] w-[38rem] h-[38rem] rounded-full bg-teal-500/5 dark:bg-teal-500/10 blur-3xl pointer-events-none" />
+
         {/* Header Navigation Bar */}
         <header className="sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-900/50 backdrop-blur-md bg-white/70 dark:bg-[#070a13]/70 px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -110,30 +113,30 @@ export default function Home() {
         </header>
 
         {/* Main Workspace Dashboard */}
-        <main className="p-4 sm:p-6 max-w-screen-2xl mx-auto flex flex-col gap-6">
+        <main className="p-4 sm:p-6 max-w-screen-2xl mx-auto flex flex-col gap-6 relative z-10">
           
           {/* Top Row: Left Sidebar (Controls) + Right 3D Viewport */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             {/* Sidebar Controls with clean tab toggle */}
             <div className="flex flex-col gap-4 lg:col-span-4 xl:col-span-3">
-              <div className="flex bg-slate-100/80 dark:bg-slate-900/60 rounded-2xl p-1 border border-slate-200/50 dark:border-slate-800/50">
+              <div className="flex backdrop-blur-md bg-white/40 dark:bg-slate-900/40 rounded-2xl p-1 border border-slate-200/40 dark:border-slate-800/40">
                 <button
                   onClick={() => setSidebarTab('sun')}
-                  className={`flex-1 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer ${
+                  className={`flex-1 text-xs font-bold py-2.5 rounded-xl transition-all duration-300 cursor-pointer ${
                     sidebarTab === 'sun'
-                      ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/30 dark:border-slate-700/30'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                      ? 'bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-[0_4px_20px_rgba(16,185,129,0.06)] border border-emerald-500/10 dark:border-emerald-400/10 scale-[1.02]'
+                      : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:scale-[1.01]'
                   }`}
                 >
                   Simulation & Sun
                 </button>
                 <button
                   onClick={() => setSidebarTab('layout')}
-                  className={`flex-1 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer ${
+                  className={`flex-1 text-xs font-bold py-2.5 rounded-xl transition-all duration-300 cursor-pointer ${
                     sidebarTab === 'layout'
-                      ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/30 dark:border-slate-700/30'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                      ? 'bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-[0_4px_20px_rgba(16,185,129,0.06)] border border-emerald-500/10 dark:border-emerald-400/10 scale-[1.02]'
+                      : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:scale-[1.01]'
                   }`}
                 >
                   Layout Customizer
@@ -144,18 +147,19 @@ export default function Home() {
             </div>
 
             {/* 3D Viewport: 8 Columns on Large Screen */}
-            <div className="lg:col-span-8 xl:col-span-9 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/50 shadow-lg h-[400px] sm:h-[480px] lg:h-[580px] relative bg-slate-100 dark:bg-slate-950/20">
+            <div className="lg:col-span-8 xl:col-span-9 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/50 shadow-lg h-[360px] sm:h-[400px] lg:h-[490px] relative bg-slate-100 dark:bg-slate-950/20">
               <SceneViewer />
               
               {/* Overlay Instructions Badge */}
-              <div className="absolute top-4 right-4 pointer-events-none hidden sm:flex flex-col gap-1.5 items-end">
-                <div className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white rounded-xl py-1.5 px-3 text-[10px] font-semibold flex items-center gap-1.5 shadow-md">
-                  <HelpCircle className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+              <div className="absolute top-3 right-3 pointer-events-none hidden md:flex items-center gap-4 bg-slate-900/85 dark:bg-slate-950/90 backdrop-blur-md border border-slate-700/50 text-[10px] font-bold text-slate-200 dark:text-slate-350 py-1.5 px-3.5 rounded-xl shadow-lg tracking-wider">
+                <div className="flex items-center gap-1.5">
+                  <HelpCircle className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
                   <span>Drag to Orbit | Scroll to Zoom | Right-Click to Pan</span>
                 </div>
-                <div className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white rounded-xl py-1.5 px-3 text-[10px] font-semibold flex items-center gap-1.5 shadow-md">
-                  <Layers className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-                  <span>Click objects to select and adjust properties</span>
+                <div className="w-px h-3.5 bg-slate-700" />
+                <div className="flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-teal-400" />
+                  <span>Click objects to select & configure</span>
                 </div>
               </div>
             </div>
@@ -166,23 +170,23 @@ export default function Home() {
 
           {/* Bottom Row: Tabbed Analytics and Data Breakdown */}
           <div className="flex flex-col gap-5">
-            <div className="flex bg-slate-100/80 dark:bg-slate-900/60 rounded-2xl p-1 border border-slate-200/50 dark:border-slate-800/50 max-w-md self-start w-full sm:w-auto">
+            <div className="flex backdrop-blur-md bg-white/40 dark:bg-slate-900/40 rounded-2xl p-1 border border-slate-200/40 dark:border-slate-800/40 max-w-md self-start w-full sm:w-auto">
               <button
                 onClick={() => setAnalyticsTab('chart')}
-                className={`flex-1 sm:flex-none sm:px-6 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none sm:px-6 text-xs font-bold py-2.5 rounded-xl transition-all duration-300 cursor-pointer ${
                   analyticsTab === 'chart'
-                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/30 dark:border-slate-700/30'
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    ? 'bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-[0_4px_20px_rgba(16,185,129,0.06)] border border-emerald-500/10 dark:border-emerald-400/10 scale-[1.02]'
+                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:scale-[1.01]'
                 }`}
               >
                 📊 Daily Solar Forecast
               </button>
               <button
                 onClick={() => setAnalyticsTab('list')}
-                className={`flex-1 sm:flex-none sm:px-6 text-xs font-bold py-2.5 rounded-xl transition-all cursor-pointer ${
+                className={`flex-1 sm:flex-none sm:px-6 text-xs font-bold py-2.5 rounded-xl transition-all duration-300 cursor-pointer ${
                   analyticsTab === 'list'
-                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/30 dark:border-slate-700/30'
-                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    ? 'bg-white dark:bg-slate-950 text-emerald-600 dark:text-emerald-400 shadow-[0_4px_20px_rgba(16,185,129,0.06)] border border-emerald-500/10 dark:border-emerald-400/10 scale-[1.02]'
+                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:scale-[1.01]'
                 }`}
               >
                 🔋 Panel Performance Grid

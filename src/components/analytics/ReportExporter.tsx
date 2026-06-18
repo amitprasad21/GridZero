@@ -97,17 +97,17 @@ export const ReportExporter: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3 mt-2">
+    <div className="flex flex-col sm:flex-row gap-3.5 mt-2">
       <button
         onClick={exportCSV}
-        className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-850 shadow-sm transition-all"
+        className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold bg-white/40 dark:bg-slate-900/40 hover:bg-white/60 dark:hover:bg-slate-900/60 text-slate-700 dark:text-slate-200 border border-slate-200/50 dark:border-slate-850/50 hover:border-emerald-500/20 dark:hover:border-emerald-400/20 shadow-sm transition-all duration-200 cursor-pointer scale-100 active:scale-95"
       >
         <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
         Export CSV Dataset
       </button>
       <button
         onClick={exportJSON}
-        className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-850 shadow-sm transition-all"
+        className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold bg-white/40 dark:bg-slate-900/40 hover:bg-white/60 dark:hover:bg-slate-900/60 text-slate-700 dark:text-slate-200 border border-slate-200/50 dark:border-slate-850/50 hover:border-amber-500/20 dark:hover:border-amber-400/20 shadow-sm transition-all duration-200 cursor-pointer scale-100 active:scale-95"
       >
         <FileJson className="w-4 h-4 text-amber-500" />
         Export JSON Report

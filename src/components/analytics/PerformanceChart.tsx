@@ -23,15 +23,15 @@ export const PerformanceChart: React.FC = () => {
   const labelColor = theme === 'dark' ? '#94a3b8' : '#64748b';
 
   return (
-    <div className="flex flex-col gap-4 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-md bg-white/70 dark:bg-slate-950/70 shadow-sm transition-all duration-300">
-      <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 pb-3">
+    <div className="flex flex-col gap-4 p-5 rounded-2xl glass-panel shadow-sm">
+      <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-850/50 pb-3">
         <h3 className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-          <Activity className="w-5 h-5 text-emerald-500" />
+          <Activity className="w-5 h-5 text-emerald-500 animate-pulse" />
           Daily Performance Forecast
         </h3>
-        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium flex items-center gap-1">
-          <Clock className="w-3.5 h-3.5" />
-          Hourly curve for {selectedLocation.name}
+        <span className="text-[10px] text-slate-450 dark:text-slate-550 font-bold flex items-center gap-1 uppercase tracking-wider">
+          <Clock className="w-3.5 h-3.5 text-slate-400" />
+          {selectedLocation.name}
         </span>
       </div>
 

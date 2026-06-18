@@ -85,21 +85,21 @@ export const SunControl: React.FC = () => {
   const isNightActive = simulationMode === 'auto' && (currentHour >= 18 || currentHour < 6);
 
   return (
-    <div className="flex flex-col gap-5 p-5 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-md bg-white/70 dark:bg-slate-950/70 shadow-sm transition-all duration-300">
-      <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 pb-3">
+    <div className="flex flex-col gap-5 p-5 rounded-2xl glass-panel shadow-sm">
+      <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-850/50 pb-3">
         <h3 className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
           <Sun className="w-5 h-5 text-amber-500 animate-pulse" />
           Simulation Settings
         </h3>
         
         {/* Toggle Mode Tab */}
-        <div className="flex bg-slate-100 dark:bg-slate-900 rounded-lg p-0.5 border border-slate-200/30 dark:border-slate-800/30">
+        <div className="flex bg-slate-100/50 dark:bg-slate-950/60 rounded-xl p-0.5 border border-slate-200/40 dark:border-slate-800/40 shadow-inner">
           <button
             onClick={() => setSimulationMode('auto')}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
               simulationMode === 'auto'
-                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-200/20 dark:border-slate-800/20 scale-[1.02]'
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-450 dark:hover:text-slate-250 hover:scale-[1.01]'
             }`}
           >
             Auto
@@ -109,10 +109,10 @@ export const SunControl: React.FC = () => {
               setSimulationMode('manual');
               setIsSimulating(false);
             }}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
               simulationMode === 'manual'
-                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-200/20 dark:border-slate-800/20 scale-[1.02]'
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-450 dark:hover:text-slate-250 hover:scale-[1.01]'
             }`}
           >
             Manual
@@ -124,48 +124,48 @@ export const SunControl: React.FC = () => {
         <div className="flex flex-col gap-4">
           
           {/* Reposit-style Morning/Night Pill Selector */}
-          <div className="flex bg-slate-100 dark:bg-slate-900/60 rounded-2xl p-1 border border-slate-200/40 dark:border-slate-800/40">
+          <div className="flex bg-slate-100/50 dark:bg-slate-900/40 rounded-2xl p-1 border border-slate-200/40 dark:border-slate-800/40">
             <button
               onClick={() => {
                 setIsSimulating(false);
                 const newDate = new Date(autoDateTimestamp);
-                newDate.setHours(10, 0, 0, 0); // 10:00 AM (Peak Sun)
+                newDate.setUTCHours(10, 0, 0, 0); // 10:00 AM (Peak Sun) in UTC
                 setAutoDateTimestamp(newDate.getTime());
               }}
-              className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 cursor-pointer ${
                 isMorningActive
-                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/30 dark:border-slate-700/30 font-semibold'
-                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  ? 'bg-white dark:bg-slate-955 text-emerald-600 dark:text-emerald-400 shadow-md border border-slate-200/30 dark:border-slate-800/30 font-bold scale-[1.01]'
+                  : 'text-slate-500 hover:text-slate-750 dark:hover:text-slate-250 hover:scale-[1.01]'
               }`}
             >
-              <span className="text-xs font-bold">Morning</span>
-              <span className="text-[9px] opacity-75">$0 for Electricity</span>
+              <span className="text-xs font-bold flex items-center gap-1">☀️ Morning</span>
+              <span className="text-[9px] opacity-80 font-medium">Peak Solar Influx</span>
             </button>
             <button
               onClick={() => {
                 setIsSimulating(false);
                 const newDate = new Date(autoDateTimestamp);
-                newDate.setHours(20, 0, 0, 0); // 8:00 PM (Night)
+                newDate.setUTCHours(20, 0, 0, 0); // 8:00 PM (Night) in UTC
                 setAutoDateTimestamp(newDate.getTime());
               }}
-              className={`flex-1 flex flex-col items-center justify-center py-2.5 rounded-xl transition-all cursor-pointer ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 cursor-pointer ${
                 isNightActive
-                  ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/30 dark:border-slate-700/30 font-semibold'
-                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                  ? 'bg-white dark:bg-slate-955 text-emerald-600 dark:text-emerald-400 shadow-md border border-slate-200/30 dark:border-slate-800/30 font-bold scale-[1.01]'
+                  : 'text-slate-500 hover:text-slate-750 dark:hover:text-slate-250 hover:scale-[1.01]'
               }`}
             >
-              <span className="text-xs font-bold">Night</span>
-              <span className="text-[9px] opacity-75">$0 for Electricity</span>
+              <span className="text-xs font-bold flex items-center gap-1">🌙 Night</span>
+              <span className="text-[9px] opacity-80 font-medium">Grid Supply Only</span>
             </button>
           </div>
 
           {/* Architectural Model Selection */}
-          <div className="flex flex-col gap-1.5 border-b border-slate-200/30 dark:border-slate-800/30 pb-3">
-            <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <div className="flex flex-col gap-1.5 border-b border-slate-200/30 dark:border-slate-850/30 pb-3">
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-slate-400" />
               Indian House Architecture
             </label>
-            <div className="grid grid-cols-3 gap-1.5">
+            <div className="grid grid-cols-3 gap-2">
               {([
                 { id: 'flat', name: 'Delhi Flat' },
                 { id: 'traditional', name: 'Kerala Trad' },
@@ -174,10 +174,10 @@ export const SunControl: React.FC = () => {
                 <button
                   key={m.id}
                   onClick={() => setHouseModel(m.id)}
-                  className={`text-[11px] font-bold py-2 px-1.5 rounded-lg border transition-all cursor-pointer ${
+                  className={`text-[10px] font-bold py-2 px-1 rounded-xl border transition-all duration-200 cursor-pointer ${
                     houseModel === m.id
-                      ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                      : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900 bg-slate-50/50 dark:bg-slate-900/30'
+                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shadow-[0_2px_10px_rgba(16,185,129,0.08)] scale-[1.02]'
+                      : 'border-slate-200/50 dark:border-slate-850/50 text-slate-500 hover:text-slate-700 dark:text-slate-450 dark:hover:text-slate-250 hover:bg-slate-105/50 dark:hover:bg-slate-900/50 bg-slate-50/20 dark:bg-slate-900/20'
                   }`}
                 >
                   {m.name}
@@ -188,7 +188,7 @@ export const SunControl: React.FC = () => {
 
           {/* Preset Locations */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <MapPin className="w-3.5 h-3.5 text-slate-400" />
               Site Location Presets
             </label>
@@ -198,7 +198,7 @@ export const SunControl: React.FC = () => {
                 const preset = LOCATION_PRESETS.find((p) => p.name === e.target.value);
                 if (preset) setSelectedLocation(preset);
               }}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full select-input bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-slate-750 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/30 transition-all cursor-pointer"
             >
               {LOCATION_PRESETS.map((p) => (
                 <option key={p.name} value={p.name}>
@@ -210,7 +210,7 @@ export const SunControl: React.FC = () => {
 
           {/* Date Picker */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
               Date of Analysis
             </label>
@@ -218,31 +218,33 @@ export const SunControl: React.FC = () => {
               type="date"
               value={dateString}
               onChange={handleDateChange}
-              className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 [color-scheme:light] dark:[color-scheme:dark]"
+              className="w-full bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-slate-750 dark:text-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500/30 [color-scheme:light] dark:[color-scheme:dark] transition-all cursor-pointer"
             />
           </div>
 
           {/* Time Slider */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-xs font-medium">
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center text-xs font-bold">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 Time of Day
               </span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 dark:bg-emerald-400/10 border border-emerald-500/20 dark:border-emerald-400/20 px-2 py-0.5 rounded-lg tracking-wide text-[10px]">
                 {formatMinutes(currentMinutes)}
               </span>
             </div>
-            <input
-              type="range"
-              min="360" // 06:00 AM
-              max="1200" // 08:00 PM
-              step="5"
-              value={currentMinutes}
-              onChange={handleTimeSliderChange}
-              className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+            <div className="px-1 py-1">
+              <input
+                type="range"
+                min="360" // 06:00 AM
+                max="1200" // 08:00 PM
+                step="5"
+                value={currentMinutes}
+                onChange={handleTimeSliderChange}
+                className="w-full slider-input cursor-pointer"
+              />
+            </div>
+            <div className="flex justify-between text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
               <span>06:00 AM</span>
               <span>12:00 PM</span>
               <span>08:00 PM</span>
@@ -250,14 +252,14 @@ export const SunControl: React.FC = () => {
           </div>
 
           {/* Timelapse Play & Speed Controls */}
-          <div className="border-t border-slate-200/50 dark:border-slate-800/50 pt-4 flex flex-col gap-3">
+          <div className="border-t border-slate-200/50 dark:border-slate-850/50 pt-4 flex flex-col gap-3">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsSimulating(!isSimulating)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-sm font-semibold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
                   isSimulating
-                    ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20'
-                    : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-[0_4px_15px_rgba(245,158,11,0.2)] border border-amber-400/10'
+                    : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-[0_4px_15px_rgba(16,185,129,0.2)] border border-emerald-450/10'
                 }`}
               >
                 {isSimulating ? (
@@ -273,19 +275,19 @@ export const SunControl: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+              <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 font-bold">
                 <span>Timelapse Speed</span>
-                <span className="font-semibold text-slate-700 dark:text-slate-300">{simulationSpeed} min / step</span>
+                <span className="font-bold text-slate-700 dark:text-slate-300">{simulationSpeed} min / step</span>
               </div>
               <div className="flex gap-2">
                 {[5, 15, 30, 60].map((speed) => (
                   <button
                     key={speed}
                     onClick={() => setSimulationSpeed(speed)}
-                    className={`flex-1 text-xs py-1 rounded-md border transition-all ${
+                    className={`flex-1 text-[10px] font-bold py-1.5 rounded-lg border transition-all duration-200 cursor-pointer ${
                       simulationSpeed === speed
-                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium'
-                        : 'border-slate-200 dark:border-slate-800 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-900'
+                        ? 'border-emerald-500 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm'
+                        : 'border-slate-200/50 dark:border-slate-850/50 text-slate-500 hover:text-slate-700 dark:text-slate-455 dark:hover:text-slate-250 hover:bg-slate-105/50 dark:hover:bg-slate-900/50 bg-slate-50/20 dark:bg-slate-900/20'
                     }`}
                   >
                     {speed}m
@@ -298,26 +300,28 @@ export const SunControl: React.FC = () => {
       ) : (
         <div className="flex flex-col gap-4">
           {/* Manual sliders for Azimuth and Elevation */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-xs font-medium">
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center text-xs font-bold">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Compass className="w-3.5 h-3.5 text-slate-400" />
                 Azimuth Angle (Compass)
               </span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 dark:bg-emerald-400/10 border border-emerald-500/20 dark:border-emerald-400/20 px-2 py-0.5 rounded-lg tracking-wide text-[10px]">
                 {Math.round(manualSun.azimuth)}°
               </span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="360"
-              step="1"
-              value={manualSun.azimuth}
-              onChange={(e) => setManualSun({ azimuth: Number(e.target.value) })}
-              className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+            <div className="px-1 py-1">
+              <input
+                type="range"
+                min="0"
+                max="360"
+                step="1"
+                value={manualSun.azimuth}
+                onChange={(e) => setManualSun({ azimuth: Number(e.target.value) })}
+                className="w-full slider-input cursor-pointer"
+              />
+            </div>
+            <div className="flex justify-between text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
               <span>0° (N)</span>
               <span>90° (E)</span>
               <span>180° (S)</span>
@@ -326,29 +330,31 @@ export const SunControl: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-xs font-medium">
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center text-xs font-bold">
               <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                 <Sun className="w-3.5 h-3.5 text-slate-400" />
                 Elevation Angle (Altitude)
               </span>
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 dark:bg-emerald-400/10 border border-emerald-500/20 dark:border-emerald-400/20 px-2 py-0.5 rounded-lg tracking-wide text-[10px]">
                 {Math.round(manualSun.elevation)}°
               </span>
             </div>
-            <input
-              type="range"
-              min="0"
-              max="90"
-              step="1"
-              value={manualSun.elevation}
-              onChange={(e) => setManualSun({ elevation: Number(e.target.value) })}
-              className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+            <div className="px-1 py-1">
+              <input
+                type="range"
+                min="0"
+                max="90"
+                step="1"
+                value={manualSun.elevation}
+                onChange={(e) => setManualSun({ elevation: Number(e.target.value) })}
+                className="w-full slider-input cursor-pointer"
+              />
+            </div>
+            <div className="flex justify-between text-[9px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
               <span>0° (Horizon)</span>
               <span>45° (Mid)</span>
-              <span>90° (Zenith/Overhead)</span>
+              <span>90° (Zenith)</span>
             </div>
           </div>
         </div>
