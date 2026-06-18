@@ -6,7 +6,7 @@
 
 ## ⚡ Key Features
 
-*   **Astronomical Sun Positioning**: Integrates standard celestial math (`SunCalc`) to project sun position based on date, time, latitude, and longitude. Includes preset locations (e.g. Los Angeles, Tokyo, Sydney) and automatic time-lapse playback.
+*   **Astronomical Sun Positioning**: Integrates standard celestial math (`SunCalc`) to project sun position based on date, time, latitude, and longitude. Includes preset Indian locations (New Delhi, Mumbai, Bengaluru, Kolkata, Chennai, Ahmedabad) and automatic time-lapse playback.
 *   **Manual Mode override**: Direct azimuth and elevation slider controls for testing arbitrary sun conditions.
 *   **Analytical CPU Raycasting Engine**: A sub-millisecond raytracer that checks obstruction for 100 sample points on each solar panel at 60 FPS, ensuring zero WebGL read-back lag.
 *   **Edge Occlusion Factor (EOF)**: A custom engineering metric that evaluates shading proximity to panel borders to model cell mismatch losses accurately.
