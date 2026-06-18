@@ -48,28 +48,30 @@ export const SunControl: React.FC = () => {
     };
   }, [isSimulating, tickSimulation]);
 
-  // Convert Date timestamp to ISO date string (YYYY-MM-DD) for HTML date picker
-  const currentDate = new Date(autoDateTimestamp);
-  const dateString = currentDate.toISOString().split('T')[0];
+  // Convert UTC timestamp to IST (+5.5 hours) for display and local calculations
+  const localDate = new Date(autoDateTimestamp + 5.5 * 60 * 60 * 1000);
+  const dateString = localDate.toISOString().split('T')[0];
 
-  // Convert current time to minutes from midnight for the time slider (range: 6:00 to 20:00 = 360 to 1200) in UTC
-  const currentMinutes = currentDate.getUTCHours() * 60 + currentDate.getUTCMinutes();
+  // Convert current local time to minutes from midnight for the time slider (range: 6:00 to 20:00 = 360 to 1200) in IST
+  const currentMinutes = localDate.getUTCHours() * 60 + localDate.getUTCMinutes();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.value) return;
     const [year, month, day] = e.target.value.split('-').map(Number);
-    const newDate = new Date(autoDateTimestamp);
+    const newDate = new Date(autoDateTimestamp + 5.5 * 60 * 60 * 1000);
     newDate.setUTCFullYear(year, month - 1, day);
-    setAutoDateTimestamp(newDate.getTime());
+    const newUtcTimestamp = newDate.getTime() - 5.5 * 60 * 60 * 1000;
+    setAutoDateTimestamp(newUtcTimestamp);
   };
 
   const handleTimeSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const totalMins = Number(e.target.value);
     const hours = Math.floor(totalMins / 60);
     const mins = totalMins % 60;
-    const newDate = new Date(autoDateTimestamp);
+    const newDate = new Date(autoDateTimestamp + 5.5 * 60 * 60 * 1000);
     newDate.setUTCHours(hours, mins, 0, 0);
-    setAutoDateTimestamp(newDate.getTime());
+    const newUtcTimestamp = newDate.getTime() - 5.5 * 60 * 60 * 1000;
+    setAutoDateTimestamp(newUtcTimestamp);
   };
 
   const formatMinutes = (totalMins: number) => {
@@ -80,9 +82,9 @@ export const SunControl: React.FC = () => {
     return `${displayHours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')} ${ampm}`;
   };
 
-  const currentHour = new Date(autoDateTimestamp).getUTCHours();
-  const isMorningActive = simulationMode === 'auto' && currentHour >= 6 && currentHour < 18;
-  const isNightActive = simulationMode === 'auto' && (currentHour >= 18 || currentHour < 6);
+  const currentLocalHour = localDate.getUTCHours();
+  const isMorningActive = simulationMode === 'auto' && currentLocalHour >= 6 && currentLocalHour < 18;
+  const isNightActive = simulationMode === 'auto' && (currentLocalHour >= 18 || currentLocalHour < 6);
 
   return (
     <div className="flex flex-col gap-5 p-5 rounded-2xl glass-panel shadow-sm">
@@ -93,10 +95,12 @@ export const SunControl: React.FC = () => {
         </h3>
         
         {/* Toggle Mode Tab */}
-        <div className="flex bg-slate-100/50 dark:bg-slate-950/60 rounded-xl p-0.5 border border-slate-200/40 dark:border-slate-800/40 shadow-inner">
+        <div className="flex bg-slate-100/50 dark:bg-slate-955/60 rounded-xl p-0.5 border border-slate-200/40 dark:border-slate-800/40 shadow-inner" role="tablist" aria-label="Simulation positioning mode">
           <button
             onClick={() => setSimulationMode('auto')}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+            role="tab"
+            aria-selected={simulationMode === 'auto'}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none ${
               simulationMode === 'auto'
                 ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-200/20 dark:border-slate-800/20 scale-[1.02]'
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-450 dark:hover:text-slate-250 hover:scale-[1.01]'
@@ -109,7 +113,9 @@ export const SunControl: React.FC = () => {
               setSimulationMode('manual');
               setIsSimulating(false);
             }}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer ${
+            role="tab"
+            aria-selected={simulationMode === 'manual'}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none ${
               simulationMode === 'manual'
                 ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-slate-200/20 dark:border-slate-800/20 scale-[1.02]'
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-450 dark:hover:text-slate-250 hover:scale-[1.01]'
@@ -128,34 +134,38 @@ export const SunControl: React.FC = () => {
             <button
               onClick={() => {
                 setIsSimulating(false);
-                const newDate = new Date(autoDateTimestamp);
-                newDate.setUTCHours(10, 0, 0, 0); // 10:00 AM (Peak Sun) in UTC
-                setAutoDateTimestamp(newDate.getTime());
+                const newDate = new Date(autoDateTimestamp + 5.5 * 60 * 60 * 1000);
+                newDate.setUTCHours(10, 0, 0, 0); // 10:00 AM IST in local Date
+                const newUtcTimestamp = newDate.getTime() - 5.5 * 60 * 60 * 1000;
+                setAutoDateTimestamp(newUtcTimestamp);
               }}
-              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 cursor-pointer ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none ${
                 isMorningActive
                   ? 'bg-white dark:bg-slate-955 text-emerald-600 dark:text-emerald-400 shadow-md border border-slate-200/30 dark:border-slate-800/30 font-bold scale-[1.01]'
                   : 'text-slate-500 hover:text-slate-750 dark:hover:text-slate-250 hover:scale-[1.01]'
               }`}
+              aria-label="Set simulation to Morning (10:00 AM peak solar influx)"
             >
-              <span className="text-xs font-bold flex items-center gap-1">☀️ Morning</span>
-              <span className="text-[9px] opacity-80 font-medium">Peak Solar Influx</span>
+              <span className="text-xs font-bold flex items-center gap-1 font-heading">☀️ Morning</span>
+              <span className="text-[9px] opacity-80 font-medium font-sans">Peak Solar Influx</span>
             </button>
             <button
               onClick={() => {
                 setIsSimulating(false);
-                const newDate = new Date(autoDateTimestamp);
-                newDate.setUTCHours(20, 0, 0, 0); // 8:00 PM (Night) in UTC
-                setAutoDateTimestamp(newDate.getTime());
+                const newDate = new Date(autoDateTimestamp + 5.5 * 60 * 60 * 1000);
+                newDate.setUTCHours(20, 0, 0, 0); // 8:00 PM IST in local Date
+                const newUtcTimestamp = newDate.getTime() - 5.5 * 60 * 60 * 1000;
+                setAutoDateTimestamp(newUtcTimestamp);
               }}
-              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 cursor-pointer ${
+              className={`flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 outline-none ${
                 isNightActive
                   ? 'bg-white dark:bg-slate-955 text-emerald-600 dark:text-emerald-400 shadow-md border border-slate-200/30 dark:border-slate-800/30 font-bold scale-[1.01]'
                   : 'text-slate-500 hover:text-slate-750 dark:hover:text-slate-250 hover:scale-[1.01]'
               }`}
+              aria-label="Set simulation to Night (8:00 PM grid supply only)"
             >
-              <span className="text-xs font-bold flex items-center gap-1">🌙 Night</span>
-              <span className="text-[9px] opacity-80 font-medium">Grid Supply Only</span>
+              <span className="text-xs font-bold flex items-center gap-1 font-heading">🌙 Night</span>
+              <span className="text-[9px] opacity-80 font-medium font-sans">Grid Supply Only</span>
             </button>
           </div>
 

@@ -36,6 +36,10 @@ interface StoreData {
   // Computed Outputs
   summary: AnalyticsSummary;
   timeSeriesData: TimeSeriesPoint[];
+
+  // Undo / Redo Stacks
+  history: unknown[];
+  future: unknown[];
 }
 
 interface StoreState extends StoreData {
@@ -57,6 +61,15 @@ interface StoreState extends StoreData {
   setSelectedTableId: (id: string | null) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   
+  addObstacle: (type: 'building' | 'tank') => void;
+  removeObstacle: (id: string) => void;
+  addTable: () => void;
+  removeTable: (id: string) => void;
+  duplicateObject: (id: string, isTable: boolean) => void;
+  resetScenario: () => void;
+  undo: () => void;
+  redo: () => void;
+
   tickSimulation: () => void;
   recalculate: () => void;
 }
@@ -72,6 +85,19 @@ const createInitialPanels = (tableId: string): SolarPanel[] => {
     eofRisk: 'low',
     efficiency: 100
   }));
+};
+
+const takeSnapshot = (state: StoreData) => {
+  return {
+    tables: JSON.parse(JSON.stringify(state.tables)),
+    obstacles: JSON.parse(JSON.stringify(state.obstacles)),
+    manualSun: { ...state.manualSun },
+    autoDateTimestamp: state.autoDateTimestamp,
+    selectedLocation: { ...state.selectedLocation },
+    selectedObstacleId: state.selectedObstacleId,
+    selectedTableId: state.selectedTableId,
+    simulationMode: state.simulationMode,
+  };
 };
 
 export const useStore = create<StoreState>((set) => {
@@ -119,10 +145,10 @@ export const useStore = create<StoreState>((set) => {
     }
   ];
 
-  // Stable UTC Date for standard start (June 18, 2026, 12:00 PM UTC)
-  const initialDate = new Date(Date.UTC(2026, 5, 18, 12, 0, 0, 0));
+  // Stable UTC Date for standard start (June 18, 2026, 12:00 PM IST = 6:30 AM UTC)
+  const initialDate = new Date(Date.UTC(2026, 5, 18, 6, 30, 0, 0));
 
-  const initialLocation = LOCATION_PRESETS[0]; // Los Angeles
+  const initialLocation = LOCATION_PRESETS[0];
 
   // Helper: Perform Shadow & Efficiency Recalculations for the entire scene at a specific sun position
   const computeScenePerformance = (
@@ -227,10 +253,22 @@ export const useStore = create<StoreState>((set) => {
       state.autoDateTimestamp
     );
 
+    // Integrated Daily Yield Calculation
+    const totalPanels = updatedTables.reduce((sum, t) => sum + t.panels.length, 0);
+    const hourlyYields = forecast.map((pt) => (pt.efficiency / 100) * (totalPanels * 0.35) * 1.0);
+    const integratedYieldKwh = hourlyYields.reduce((sum, val) => sum + val, 0);
+
+    const updatedSummary = {
+      ...summary,
+      dailyYieldKwh: Math.round(integratedYieldKwh * 10) / 10,
+      monthlySavingsRs: Math.round(integratedYieldKwh * 30 * 7.5),
+      co2OffsetKg: Math.round(integratedYieldKwh * 30 * 0.82)
+    };
+
     return {
       ...state,
       tables: updatedTables,
-      summary,
+      summary: updatedSummary,
       timeSeriesData: forecast
     };
   };
@@ -244,7 +282,7 @@ export const useStore = create<StoreState>((set) => {
     autoDateTimestamp: initialDate.getTime(),
     selectedLocation: initialLocation,
     isSimulating: false,
-    simulationSpeed: 2, // minutes per step in simulation ticks (speeded up for 30fps smoothness)
+    simulationSpeed: 2,
     theme: 'light' as const,
     selectedObstacleId: null,
     selectedTableId: null,
@@ -260,37 +298,68 @@ export const useStore = create<StoreState>((set) => {
       siteRisk: 'low' as const,
       table1Efficiency: 0,
       table2Efficiency: 0,
+      tableEfficiencies: {},
       dailyYieldKwh: 0,
       monthlySavingsRs: 0,
       co2OffsetKg: 0
     },
-    timeSeriesData: []
+    timeSeriesData: [],
+    history: [],
+    future: []
   };
 
-  // Run initial calculation to populate summary and timeSeriesData
   const populatedInitialState = runUpdate(tempState);
 
   return {
     ...populatedInitialState,
 
-    // Actions
     setSimulationMode: (simulationMode) => {
-      set((state) => runUpdate({ ...state, simulationMode }));
+      set((state) => {
+        const snap = takeSnapshot(state);
+        return runUpdate({
+          ...state,
+          simulationMode,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
     },
 
     setManualSun: (updates) => {
       set((state) => {
+        const snap = takeSnapshot(state);
         const manualSun = { ...state.manualSun, ...updates };
-        return runUpdate({ ...state, manualSun });
+        return runUpdate({
+          ...state,
+          manualSun,
+          history: [...state.history, snap],
+          future: []
+        });
       });
     },
 
     setAutoDateTimestamp: (autoDateTimestamp) => {
-      set((state) => runUpdate({ ...state, autoDateTimestamp }));
+      set((state) => {
+        const snap = takeSnapshot(state);
+        return runUpdate({
+          ...state,
+          autoDateTimestamp,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
     },
 
     setSelectedLocation: (selectedLocation) => {
-      set((state) => runUpdate({ ...state, selectedLocation }));
+      set((state) => {
+        const snap = takeSnapshot(state);
+        return runUpdate({
+          ...state,
+          selectedLocation,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
     },
 
     setIsSimulating: (isSimulating) => {
@@ -303,37 +372,55 @@ export const useStore = create<StoreState>((set) => {
 
     updateObstacle: (id, updates) => {
       set((state) => {
+        const snap = takeSnapshot(state);
         const obstacles = state.obstacles.map((obs) => {
           if (obs.id === id) {
             return { ...obs, ...updates } as Obstacle;
           }
           return obs;
         });
-        return runUpdate({ ...state, obstacles });
+        return runUpdate({
+          ...state,
+          obstacles,
+          history: [...state.history, snap],
+          future: []
+        });
       });
     },
 
     updateTablePosition: (id, x, y) => {
       set((state) => {
+        const snap = takeSnapshot(state);
         const tables = state.tables.map((table) => {
           if (table.id === id) {
             return { ...table, x, y };
           }
           return table;
         });
-        return runUpdate({ ...state, tables });
+        return runUpdate({
+          ...state,
+          tables,
+          history: [...state.history, snap],
+          future: []
+        });
       });
     },
 
     updateTableElevation: (id, elevation) => {
       set((state) => {
+        const snap = takeSnapshot(state);
         const tables = state.tables.map((table) => {
           if (table.id === id) {
             return { ...table, elevation };
           }
           return table;
         });
-        return runUpdate({ ...state, tables });
+        return runUpdate({
+          ...state,
+          tables,
+          history: [...state.history, snap],
+          future: []
+        });
       });
     },
 
@@ -350,11 +437,214 @@ export const useStore = create<StoreState>((set) => {
     },
 
     setHouseModel: (houseModel) => {
-      set((state) => runUpdate({ ...state, houseModel }));
+      set((state) => {
+        const snap = takeSnapshot(state);
+        return runUpdate({
+          ...state,
+          houseModel,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
     },
 
     setIsDragging3D: (isDragging3D) => {
       set({ isDragging3D });
+    },
+
+    addObstacle: (type) => {
+      set((state) => {
+        const snap = takeSnapshot(state);
+        const id = `obstacle-${Date.now()}`;
+        const count = state.obstacles.filter((o) => o.type === type).length + 1;
+        
+        let newObs: Obstacle;
+        if (type === 'building') {
+          newObs = {
+            id,
+            name: `Building ${count}`,
+            type: 'building',
+            x: 1.0,
+            y: 1.0,
+            width: 3.0,
+            length: 3.0,
+            height: 3.0
+          };
+        } else {
+          newObs = {
+            id,
+            name: `Water Tank ${count}`,
+            type: 'tank',
+            x: 1.0,
+            y: 1.0,
+            radius: 1.0,
+            height: 3.0
+          };
+        }
+
+        const obstacles = [...state.obstacles, newObs];
+        return runUpdate({
+          ...state,
+          obstacles,
+          selectedObstacleId: id,
+          selectedTableId: null,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
+    },
+
+    removeObstacle: (id) => {
+      set((state) => {
+        const snap = takeSnapshot(state);
+        const obstacles = state.obstacles.filter((o) => o.id !== id);
+        return runUpdate({
+          ...state,
+          obstacles,
+          selectedObstacleId: state.selectedObstacleId === id ? null : state.selectedObstacleId,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
+    },
+
+    addTable: () => {
+      set((state) => {
+        const snap = takeSnapshot(state);
+        const id = `table-${Date.now()}`;
+        const newTable: SolarTable = {
+          id,
+          name: `Array ${String.fromCharCode(65 + state.tables.length)}`,
+          x: 2.0,
+          y: -2.0,
+          elevation: 0.8,
+          tilt: 15,
+          panels: createInitialPanels(id)
+        };
+
+        const tables = [...state.tables, newTable];
+        return runUpdate({
+          ...state,
+          tables,
+          selectedTableId: id,
+          selectedObstacleId: null,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
+    },
+
+    removeTable: (id) => {
+      set((state) => {
+        const snap = takeSnapshot(state);
+        const tables = state.tables.filter((t) => t.id !== id);
+        return runUpdate({
+          ...state,
+          tables,
+          selectedTableId: state.selectedTableId === id ? null : state.selectedTableId,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
+    },
+
+    duplicateObject: (id, isTable) => {
+      set((state) => {
+        const snap = takeSnapshot(state);
+        if (isTable) {
+          const table = state.tables.find((t) => t.id === id);
+          if (!table) return {};
+          const newId = `table-${Date.now()}`;
+          const newTable: SolarTable = {
+            ...table,
+            id: newId,
+            name: `Copy of ${table.name}`,
+            x: table.x + 1.5,
+            y: table.y + 1.5,
+            panels: createInitialPanels(newId)
+          };
+          const tables = [...state.tables, newTable];
+          return runUpdate({
+            ...state,
+            tables,
+            selectedTableId: newId,
+            selectedObstacleId: null,
+            history: [...state.history, snap],
+            future: []
+          });
+        } else {
+          const obs = state.obstacles.find((o) => o.id === id);
+          if (!obs) return {};
+          const newId = `obstacle-${Date.now()}`;
+          const newObs: Obstacle = {
+            ...obs,
+            id: newId,
+            name: `Copy of ${obs.name}`,
+            x: obs.x + 1.5,
+            y: obs.y + 1.5
+          } as Obstacle;
+          const obstacles = [...state.obstacles, newObs];
+          return runUpdate({
+            ...state,
+            obstacles,
+            selectedObstacleId: newId,
+            selectedTableId: null,
+            history: [...state.history, snap],
+            future: []
+          });
+        }
+      });
+    },
+
+    resetScenario: () => {
+      set((state) => {
+        const snap = takeSnapshot(state);
+        return runUpdate({
+          ...state,
+          tables: initialTables,
+          obstacles: initialObstacles,
+          manualSun: { azimuth: 180, elevation: 45 },
+          autoDateTimestamp: initialDate.getTime(),
+          selectedLocation: LOCATION_PRESETS[0],
+          selectedObstacleId: null,
+          selectedTableId: null,
+          isSimulating: false,
+          history: [...state.history, snap],
+          future: []
+        });
+      });
+    },
+
+    undo: () => {
+      set((state) => {
+        if (state.history.length === 0) return {};
+        const prevHistory = [...state.history];
+        const snap = prevHistory.pop()!;
+        const currentSnap = takeSnapshot(state);
+
+        return runUpdate({
+          ...state,
+          ...snap,
+          history: prevHistory,
+          future: [currentSnap, ...state.future]
+        });
+      });
+    },
+
+    redo: () => {
+      set((state) => {
+        if (state.future.length === 0) return {};
+        const prevFuture = [...state.future];
+        const snap = prevFuture.shift()!;
+        const currentSnap = takeSnapshot(state);
+
+        return runUpdate({
+          ...state,
+          ...snap,
+          history: [...state.history, currentSnap],
+          future: prevFuture
+        });
+      });
     },
 
     tickSimulation: () => {
@@ -362,13 +652,11 @@ export const useStore = create<StoreState>((set) => {
         if (!state.isSimulating) return {};
 
         const currentDate = new Date(state.autoDateTimestamp);
-        // Advance time by simulationSpeed (minutes) in UTC
         currentDate.setUTCMinutes(currentDate.getUTCMinutes() + state.simulationSpeed);
 
-        // If it goes past 8:00 PM, loop back to 6:00 AM UTC
-        const hour = currentDate.getUTCHours();
-        if (hour >= 20 || hour < 6) {
-          currentDate.setUTCHours(6, 0, 0, 0);
+        const localHour = currentDate.getUTCHours() + currentDate.getUTCMinutes() / 60 + 5.5;
+        if (localHour >= 20.0 || localHour < 6.0) {
+          currentDate.setUTCHours(0, 30, 0, 0); // 6:00 AM IST (00:30 UTC)
         }
 
         return runUpdate({

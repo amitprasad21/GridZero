@@ -124,14 +124,14 @@ export const SceneViewer: React.FC = () => {
             />
           </mesh>
 
-          {/* Simple Procedural Yard Trees (Casts realistic shadows on panels/house) */}
+          {/* Simple Procedural Yard Trees (Decorative only, do not cast visual shadows to match analytical model) */}
           {/* Tree 1 (Left front yard) */}
           <group position={[-7, 0, 4]}>
-            <mesh position={[0, 1.25, 0]} castShadow>
+            <mesh position={[0, 1.25, 0]}>
               <cylinderGeometry args={[0.1, 0.15, 2.5, 8]} />
               <meshStandardMaterial color={theme === 'dark' ? '#27272a' : '#78350f'} roughness={0.9} />
             </mesh>
-            <mesh position={[0, 2.8, 0]} castShadow>
+            <mesh position={[0, 2.8, 0]}>
               <sphereGeometry args={[1.0, 12, 12]} />
               <meshStandardMaterial color={theme === 'dark' ? '#065f46' : '#16a34a'} roughness={0.8} />
             </mesh>
@@ -139,11 +139,11 @@ export const SceneViewer: React.FC = () => {
 
           {/* Tree 2 (Back right yard) */}
           <group position={[7, 0, -5]}>
-            <mesh position={[0, 1.1, 0]} castShadow>
+            <mesh position={[0, 1.1, 0]}>
               <cylinderGeometry args={[0.08, 0.12, 2.2, 8]} />
               <meshStandardMaterial color={theme === 'dark' ? '#27272a' : '#78350f'} roughness={0.9} />
             </mesh>
-            <mesh position={[0, 2.4, 0]} castShadow>
+            <mesh position={[0, 2.4, 0]}>
               <sphereGeometry args={[0.85, 12, 12]} />
               <meshStandardMaterial color={theme === 'dark' ? '#065f46' : '#15803d'} roughness={0.8} />
             </mesh>
@@ -151,11 +151,11 @@ export const SceneViewer: React.FC = () => {
 
           {/* Simple Utility Pole representing grid connectivity */}
           <group position={[8, 0, 8]}>
-            <mesh position={[0, 2.0, 0]} castShadow>
+            <mesh position={[0, 2.0, 0]}>
               <cylinderGeometry args={[0.06, 0.08, 4.0, 6]} />
               <meshStandardMaterial color="#94a3b8" roughness={0.8} />
             </mesh>
-            <mesh position={[0, 3.8, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
+            <mesh position={[0, 3.8, 0]} rotation={[0, Math.PI / 4, 0]}>
               <boxGeometry args={[1.0, 0.06, 0.06]} />
               <meshStandardMaterial color="#475569" metalness={0.7} />
             </mesh>
@@ -179,7 +179,7 @@ export const SceneViewer: React.FC = () => {
           {/* Glowing Garden Spherical Lamps (matching reference style) */}
           {/* Lamp 1 */}
           <group position={[-8, 0, -4]}>
-            <mesh position={[0, 0.3, 0]} castShadow>
+            <mesh position={[0, 0.3, 0]}>
               <cylinderGeometry args={[0.02, 0.02, 0.6, 8]} />
               <meshStandardMaterial color="#475569" roughness={0.5} />
             </mesh>
@@ -192,7 +192,7 @@ export const SceneViewer: React.FC = () => {
 
           {/* Lamp 2 */}
           <group position={[8, 0, -4]}>
-            <mesh position={[0, 0.3, 0]} castShadow>
+            <mesh position={[0, 0.3, 0]}>
               <cylinderGeometry args={[0.02, 0.02, 0.6, 8]} />
               <meshStandardMaterial color="#475569" roughness={0.5} />
             </mesh>

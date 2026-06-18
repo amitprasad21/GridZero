@@ -129,10 +129,12 @@ export function generateAnalyticsSummary(tables: SolarTable[]): AnalyticsSummary
   let sumEfficiency = 0;
   let sumEOF = 0;
   
+  const tableEfficiencies: Record<string, number> = {};
   let table1EffSum = 0;
   let table2EffSum = 0;
 
   tables.forEach((table) => {
+    let tableEffSum = 0;
     table.panels.forEach((panel) => {
       totalPanels++;
       if (panel.efficiency > 0.01) activePanels++;
@@ -142,12 +144,16 @@ export function generateAnalyticsSummary(tables: SolarTable[]): AnalyticsSummary
       sumEfficiency += panel.efficiency;
       sumEOF += panel.eofPercentage;
 
+      tableEffSum += panel.efficiency;
       if (table.id === 'table-1') {
         table1EffSum += panel.efficiency;
-      } else {
+      } else if (table.id === 'table-2') {
         table2EffSum += panel.efficiency;
       }
     });
+    tableEfficiencies[table.id] = table.panels.length > 0
+      ? Math.round((tableEffSum / table.panels.length) * 10) / 10
+      : 0;
   });
 
   const avgShadow = totalPanels > 0 ? sumShadow / totalPanels : 0;
@@ -180,6 +186,7 @@ export function generateAnalyticsSummary(tables: SolarTable[]): AnalyticsSummary
     siteRisk,
     table1Efficiency: Math.round((table1EffSum / 6) * 10) / 10,
     table2Efficiency: Math.round((table2EffSum / 6) * 10) / 10,
+    tableEfficiencies,
     dailyYieldKwh: Math.round(dailyYieldKwh * 10) / 10,
     monthlySavingsRs: Math.round(monthlySavingsRs),
     co2OffsetKg: Math.round(co2OffsetKg * 10) / 10,

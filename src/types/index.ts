@@ -74,6 +74,7 @@ export interface AnalyticsSummary {
   siteRisk: RiskLevel;
   table1Efficiency: number;
   table2Efficiency: number;
+  tableEfficiencies: Record<string, number>;
   dailyYieldKwh: number;    // estimated solar generation in kWh/day
   monthlySavingsRs: number; // estimated monthly monetary savings in Rupees
   co2OffsetKg: number;      // estimated carbon offset in kg CO2/month
