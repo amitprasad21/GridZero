@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { SolarTable, SolarPanel } from '../../types';
 import { PANEL_WIDTH, PANEL_LENGTH, PANEL_SPACING, TABLE_CLEARANCE } from '../../utils/shadow';
@@ -135,11 +135,10 @@ export const SolarTable3D: React.FC<SolarTable3DProps> = ({ table }) => {
   const setSelectedTableId = useStore((state) => state.setSelectedTableId);
   const updateTablePosition = useStore((state) => state.updateTablePosition);
   const updateTableElevation = useStore((state) => state.updateTableElevation);
-  const isDragging3D = useStore((state) => state.isDragging3D);
   const setIsDragging3D = useStore((state) => state.setIsDragging3D);
   
   const isSelected = selectedTableId === table.id;
-  const groupRef = useRef<THREE.Group>(null);
+  const [groupNode, setGroupNode] = useState<THREE.Group | null>(null);
 
   const tiltRad = (table.tilt * Math.PI) / 180;
 
@@ -160,7 +159,7 @@ export const SolarTable3D: React.FC<SolarTable3DProps> = ({ table }) => {
   return (
     <>
       <group 
-        ref={groupRef}
+        ref={setGroupNode}
         position={[table.x, baseHeight, table.y]}
         onClick={(e) => {
           e.stopPropagation();
@@ -255,14 +254,14 @@ export const SolarTable3D: React.FC<SolarTable3DProps> = ({ table }) => {
         )}
       </group>
 
-      {isSelected && groupRef.current && (
+      {isSelected && groupNode && (
         <TransformControls
-          object={groupRef.current}
+          object={groupNode}
           mode="translate"
           showY={true} // Allow horizontal and vertical movement for solar panels (allows roof placing!)
           onChange={() => {
-            if (groupRef.current) {
-              const pos = groupRef.current.position;
+            if (groupNode) {
+              const pos = groupNode.position;
               if (Math.abs(pos.x - table.x) > 0.01 || Math.abs(pos.z - table.y) > 0.01) {
                 updateTablePosition(table.id, pos.x, pos.z);
               }

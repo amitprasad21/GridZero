@@ -166,14 +166,14 @@ export const SunControl: React.FC = () => {
               Indian House Architecture
             </label>
             <div className="grid grid-cols-3 gap-1.5">
-              {[
+              {([
                 { id: 'flat', name: 'Delhi Flat' },
                 { id: 'traditional', name: 'Kerala Trad' },
                 { id: 'modern', name: 'Blr Modern' }
-              ].map((m) => (
+              ] as const).map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => setHouseModel(m.id as any)}
+                  onClick={() => setHouseModel(m.id)}
                   className={`text-[11px] font-bold py-2 px-1.5 rounded-lg border transition-all cursor-pointer ${
                     houseModel === m.id
                       ? 'border-emerald-500 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'

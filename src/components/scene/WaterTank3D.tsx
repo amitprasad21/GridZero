@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { WaterTank } from '../../types';
 import { Edges, TransformControls, Html } from '@react-three/drei';
@@ -12,12 +12,11 @@ export const WaterTank3D: React.FC<WaterTank3DProps> = ({ obstacle }) => {
   const selectedObstacleId = useStore((state) => state.selectedObstacleId);
   const setSelectedObstacleId = useStore((state) => state.setSelectedObstacleId);
   const updateObstacle = useStore((state) => state.updateObstacle);
-  const isDragging3D = useStore((state) => state.isDragging3D);
   const setIsDragging3D = useStore((state) => state.setIsDragging3D);
   const theme = useStore((state) => state.theme);
   
   const isSelected = selectedObstacleId === obstacle.id;
-  const groupRef = useRef<THREE.Group>(null);
+  const [groupNode, setGroupNode] = useState<THREE.Group | null>(null);
 
   const h = obstacle.height;
   const r = obstacle.radius;
@@ -44,7 +43,7 @@ export const WaterTank3D: React.FC<WaterTank3DProps> = ({ obstacle }) => {
   return (
     <>
       <group
-        ref={groupRef}
+        ref={setGroupNode}
         position={[obstacle.x, 0, obstacle.y]}
         onClick={handleSelect}
       >
@@ -130,14 +129,14 @@ export const WaterTank3D: React.FC<WaterTank3DProps> = ({ obstacle }) => {
         )}
       </group>
 
-      {isSelected && groupRef.current && (
+      {isSelected && groupNode && (
         <TransformControls
-          object={groupRef.current}
+          object={groupNode}
           mode="translate"
           showY={false} // Only horizontal movement for silo
           onChange={() => {
-            if (groupRef.current) {
-              const pos = groupRef.current.position;
+            if (groupNode) {
+              const pos = groupNode.position;
               if (Math.abs(pos.x - obstacle.x) > 0.01 || Math.abs(pos.z - obstacle.y) > 0.01) {
                 updateObstacle(obstacle.id, { x: pos.x, y: pos.z });
               }

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { Building } from '../../types';
 import { Edges, TransformControls, Html } from '@react-three/drei';
@@ -12,13 +12,12 @@ export const Building3D: React.FC<Building3DProps> = ({ obstacle }) => {
   const selectedObstacleId = useStore((state) => state.selectedObstacleId);
   const setSelectedObstacleId = useStore((state) => state.setSelectedObstacleId);
   const updateObstacle = useStore((state) => state.updateObstacle);
-  const isDragging3D = useStore((state) => state.isDragging3D);
   const setIsDragging3D = useStore((state) => state.setIsDragging3D);
   const houseModel = useStore((state) => state.houseModel);
   const theme = useStore((state) => state.theme);
   
   const isSelected = selectedObstacleId === obstacle.id;
-  const groupRef = useRef<THREE.Group>(null);
+  const [groupNode, setGroupNode] = useState<THREE.Group | null>(null);
 
   const w = obstacle.width;
   const h = obstacle.height; // typically 4.0
@@ -264,7 +263,7 @@ export const Building3D: React.FC<Building3DProps> = ({ obstacle }) => {
   return (
     <>
       <group
-        ref={groupRef}
+        ref={setGroupNode}
         position={[obstacle.x, 0, obstacle.y]}
         onClick={handleSelect}
       >
@@ -294,14 +293,14 @@ export const Building3D: React.FC<Building3DProps> = ({ obstacle }) => {
         )}
       </group>
 
-      {isSelected && groupRef.current && (
+      {isSelected && groupNode && (
         <TransformControls
-          object={groupRef.current}
+          object={groupNode}
           mode="translate"
           showY={false} // Only horizontal movement for house
           onChange={() => {
-            if (groupRef.current) {
-              const pos = groupRef.current.position;
+            if (groupNode) {
+              const pos = groupNode.position;
               if (Math.abs(pos.x - obstacle.x) > 0.01 || Math.abs(pos.z - obstacle.y) > 0.01) {
                 updateObstacle(obstacle.id, { x: pos.x, y: pos.z });
               }

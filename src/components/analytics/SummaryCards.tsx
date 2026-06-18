@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
-import { Zap, Sun, ShieldAlert, CheckCircle, AlertTriangle, Leaf, TrendingUp, ChevronRight } from 'lucide-react';
+import { Zap, ShieldAlert, CheckCircle, AlertTriangle, Leaf, TrendingUp, ChevronRight } from 'lucide-react';
 import { RiskLevel } from '../../types';
 
 export const SummaryCards: React.FC = () => {
