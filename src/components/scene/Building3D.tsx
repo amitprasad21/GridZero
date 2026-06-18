@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { Building } from '../../types';
-import { Edges, TransformControls } from '@react-three/drei';
+import { Edges, TransformControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Building3DProps {
@@ -281,6 +281,17 @@ export const Building3D: React.FC<Building3DProps> = ({ obstacle }) => {
           distance={w * 2.5}
           decay={1.2}
         />
+
+        {/* Floating 3D HUD Tooltip */}
+        {isSelected && (
+          <Html distanceFactor={10} position={[0, h + 0.6, 0]} center>
+            <div className="bg-slate-950/85 backdrop-blur-md text-white border border-slate-700/50 rounded-xl px-2.5 py-1.5 shadow-2xl flex flex-col gap-0.5 min-w-[130px] pointer-events-none select-none text-center font-sans">
+              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Active Structure</span>
+              <span className="text-xs font-black tracking-tight">{obstacle.name}</span>
+              <span className="text-[9px] text-slate-400 font-semibold mt-0.5">[{obstacle.x.toFixed(1)}m, {obstacle.y.toFixed(1)}m]</span>
+            </div>
+          </Html>
+        )}
       </group>
 
       {isSelected && groupRef.current && (

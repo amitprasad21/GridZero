@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
-import { Zap, Sun, ShieldAlert, CheckCircle, AlertTriangle, Leaf, TrendingUp } from 'lucide-react';
+import { Zap, Sun, ShieldAlert, CheckCircle, AlertTriangle, Leaf, TrendingUp, ChevronRight } from 'lucide-react';
 import { RiskLevel } from '../../types';
 
 export const SummaryCards: React.FC = () => {
@@ -128,6 +128,73 @@ export const SummaryCards: React.FC = () => {
           ) : (
             <span className="flex items-center gap-1 text-emerald-500 font-medium"><CheckCircle className="w-3 h-3" /> Full sun</span>
           )}
+        </div>
+      </div>
+
+      {/* Solar Energy Flow Cascade Banner */}
+      <div className="flex flex-col gap-4 p-5 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-md bg-white/70 dark:bg-slate-950/70 shadow-sm transition-all duration-300 col-span-1 sm:col-span-2 lg:col-span-4 mt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-900 pb-3">
+          <div>
+            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm tracking-tight flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Real-time Power Cascade Analysis
+            </h4>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+              Visualizing the decomposition of peak sunlight input to net electrical output power
+            </p>
+          </div>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            System Rating: 4.20 kWp
+          </span>
+        </div>
+
+        {/* Cascade Pipeline */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-2 text-xs font-semibold py-1">
+          {/* Step 1: Potential Influx */}
+          <div className="flex-1 bg-slate-50 dark:bg-slate-900/30 p-3 rounded-xl border border-slate-100 dark:border-slate-900 flex flex-col gap-1">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">1. Sunlight Influx</span>
+            <span className="text-sm font-black text-slate-800 dark:text-slate-100">4.20 kWp</span>
+            <span className="text-[9px] text-slate-400 font-medium">Standard test conditions</span>
+          </div>
+
+          <div className="hidden lg:block text-slate-300 dark:text-slate-700 self-center">
+            <ChevronRight className="w-5 h-5" />
+          </div>
+
+          {/* Step 2: Obstruction Loss */}
+          <div className="flex-1 bg-slate-50 dark:bg-slate-900/30 p-3 rounded-xl border border-slate-100 dark:border-slate-900 flex flex-col gap-1">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">2. Shadow Obstruction</span>
+            <span className="text-sm font-black text-rose-500">
+              -{(4.2 * (summary.avgShadow / 100)).toFixed(2)} kW
+            </span>
+            <span className="text-[9px] text-slate-400 font-medium">Blocked by physical objects ({summary.avgShadow}%)</span>
+          </div>
+
+          <div className="hidden lg:block text-slate-300 dark:text-slate-700 self-center">
+            <ChevronRight className="w-5 h-5" />
+          </div>
+
+          {/* Step 3: Diode Bypass Losses */}
+          <div className="flex-1 bg-slate-50 dark:bg-slate-900/30 p-3 rounded-xl border border-slate-100 dark:border-slate-900 flex flex-col gap-1">
+            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">3. Diode Bypass & EOF Loss</span>
+            <span className="text-sm font-black text-amber-500">
+              -{(4.2 - (4.2 * (summary.avgShadow / 100)) - (4.2 * (summary.avgEfficiency / 100))).toFixed(2)} kW
+            </span>
+            <span className="text-[9px] text-slate-400 font-medium">Mismatch & edge penalty losses</span>
+          </div>
+
+          <div className="hidden lg:block text-slate-300 dark:text-slate-700 self-center">
+            <ChevronRight className="w-5 h-5" />
+          </div>
+
+          {/* Step 4: Net Power Output */}
+          <div className="flex-1 bg-emerald-500/5 dark:bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 flex flex-col gap-1">
+            <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">4. Net Power Yield</span>
+            <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+              {(4.2 * (summary.avgEfficiency / 100)).toFixed(2)} kW
+            </span>
+            <span className="text-[9px] text-emerald-600/70 dark:text-emerald-400/70 font-medium">Net conversion efficiency: {summary.avgEfficiency}%</span>
+          </div>
         </div>
       </div>
     </div>

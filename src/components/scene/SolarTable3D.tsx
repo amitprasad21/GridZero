@@ -2,7 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { SolarTable, SolarPanel } from '../../types';
 import { PANEL_WIDTH, PANEL_LENGTH, PANEL_SPACING, TABLE_CLEARANCE } from '../../utils/shadow';
-import { TransformControls } from '@react-three/drei';
+import { TransformControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 
@@ -239,6 +239,20 @@ export const SolarTable3D: React.FC<SolarTable3DProps> = ({ table }) => {
             </mesh>
           )}
         </group>
+
+        {/* Floating 3D HUD Tooltip */}
+        {isSelected && (
+          <Html distanceFactor={10} position={[0, TABLE_CLEARANCE + 1.2, 0]} center>
+            <div className="bg-slate-950/85 backdrop-blur-md text-white border border-emerald-500/30 rounded-xl px-2.5 py-1.5 shadow-2xl flex flex-col gap-0.5 min-w-[130px] pointer-events-none select-none text-center font-sans">
+              <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Active Array</span>
+              <span className="text-xs font-black tracking-tight">{table.name}</span>
+              <span className="text-[10px] font-bold text-emerald-400 mt-0.5">
+                {Math.round(table.panels.reduce((sum, p) => sum + p.efficiency, 0) / 6)}% Avg Eff
+              </span>
+              <span className="text-[9px] text-slate-400 font-semibold">Elevation: {table.elevation.toFixed(1)}m</span>
+            </div>
+          </Html>
+        )}
       </group>
 
       {isSelected && groupRef.current && (

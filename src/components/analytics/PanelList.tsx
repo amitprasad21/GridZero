@@ -87,42 +87,75 @@ export const PanelList: React.FC = () => {
                   return (
                     <div 
                       key={panel.id}
-                      className="flex flex-col gap-2 p-3.5 rounded-xl border border-slate-100 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-100/30 dark:hover:bg-slate-900/30 transition-all"
+                      className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-3.5 rounded-xl border border-slate-100 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-100/30 dark:hover:bg-slate-900/30 transition-all"
                     >
-                      {/* Name and efficiency status */}
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                          Panel {letter}
-                        </span>
-                        
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${getEfficiencyColor(panel.efficiency)}`}>
-                            {panel.efficiency}% Eff
+                      {/* Left Side: Metrics */}
+                      <div className="flex-1 flex flex-col gap-2">
+                        {/* Name and efficiency status */}
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                            Panel {letter}
                           </span>
+                          
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${getEfficiencyColor(panel.efficiency)}`}>
+                              {panel.efficiency}% Eff
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Metrics bar */}
+                        <div className="flex flex-col gap-1.5 text-[10px]">
+                          {/* Shading */}
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 dark:text-slate-400">Shading:</span>
+                            <span className="font-semibold text-slate-700 dark:text-slate-300">{panel.shadedPercentage}%</span>
+                          </div>
+                          <div className="w-full h-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-amber-500 transition-all duration-300"
+                              style={{ width: `${panel.shadedPercentage}%` }}
+                            />
+                          </div>
+
+                          {/* EOF */}
+                          <div className="flex justify-between items-center mt-1">
+                            <span className="text-slate-500 dark:text-slate-400">Edge Occlusion (EOF):</span>
+                            <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
+                              {getRiskIcon(panel.eofRisk)}
+                              <span>{panel.eofPercentage}%</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Metrics bar */}
-                      <div className="flex flex-col gap-1.5 text-[10px]">
-                        {/* Shading */}
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 dark:text-slate-400">Shading:</span>
-                          <span className="font-semibold text-slate-700 dark:text-slate-300">{panel.shadedPercentage}%</span>
-                        </div>
-                        <div className="w-full h-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-amber-500 transition-all duration-300"
-                            style={{ width: `${panel.shadedPercentage}%` }}
-                          />
-                        </div>
-
-                        {/* EOF */}
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="text-slate-500 dark:text-slate-400">Edge Occlusion (EOF):</span>
-                          <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-slate-300">
-                            {getRiskIcon(panel.eofRisk)}
-                            <span>{panel.eofPercentage}%</span>
-                          </div>
+                      {/* Right Side: 10x10 Shading Heatmap Grid */}
+                      <div className="flex flex-col items-center gap-1.5 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800/50 pt-2.5 md:pt-0 md:pl-4 self-center">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Silicon Cell Map</span>
+                        <div className="grid grid-cols-10 gap-0.5 p-1 rounded-lg bg-slate-900 border border-slate-850 dark:border-slate-800 shadow-inner">
+                          {panel.shadedFlags.map((shaded, sIdx) => {
+                            // Split into vertical thirds (substrings)
+                            const col = sIdx % 10;
+                            const isDiodeTriggered = 
+                              (col <= 2 && panel.shadedPercentage > 5 && panel.efficiency < 85) ||
+                              (col >= 3 && col <= 6 && panel.shadedPercentage > 5 && panel.efficiency < 85) ||
+                              (col >= 7 && panel.shadedPercentage > 5 && panel.efficiency < 85);
+                            
+                            let cellBg = 'bg-emerald-500 shadow-emerald-500/20';
+                            if (shaded) {
+                              cellBg = 'bg-rose-500 shadow-rose-500/30';
+                            } else if (isDiodeTriggered) {
+                              cellBg = 'bg-amber-500/90 shadow-amber-500/20'; // diode-bypassed cell
+                            }
+                            
+                            return (
+                              <div
+                                key={sIdx}
+                                className={`w-1.5 h-1.5 rounded-xs transition-colors duration-300 ${cellBg} shadow-sm`}
+                                title={shaded ? 'Shaded Cell' : isDiodeTriggered ? 'Diode Bypassed Cell' : 'Active Cell'}
+                              />
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
