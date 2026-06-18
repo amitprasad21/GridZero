@@ -186,7 +186,7 @@ export const useStore = create<StoreState>((set) => {
     // Forecast from 6:00 AM to 7:00 PM (14 hourly steps)
     for (let hour = 6; hour <= 19; hour++) {
       const loopDate = new Date(baseDate);
-      loopDate.setHours(hour, 0, 0, 0);
+      loopDate.setUTCHours(hour, 0, 0, 0);
       
       const sunPos = calculateSunPosition(loopDate, location.latitude, location.longitude);
       const { summary } = computeScenePerformance(tables, obstacles, sunPos);
