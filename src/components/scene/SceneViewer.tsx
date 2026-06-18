@@ -54,6 +54,10 @@ export const SceneViewer: React.FC = () => {
         shadows
         camera={{ position: [-12, 10, 15], fov: 45 }}
         className="w-full h-full"
+        onPointerMissed={() => {
+          setSelectedObstacleId(null);
+          setSelectedTableId(null);
+        }}
       >
         <color attach="background" args={[bgColor]} />
         
@@ -163,14 +167,6 @@ export const SceneViewer: React.FC = () => {
         </Suspense>
       </Canvas>
 
-      {/* Clicking empty space in 3D canvas deselects active targets */}
-      <div 
-        className="absolute inset-0 pointer-events-none"
-        onClick={() => {
-          setSelectedObstacleId(null);
-          setSelectedTableId(null);
-        }}
-      />
     </div>
   );
 };
