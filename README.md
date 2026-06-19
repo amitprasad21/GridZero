@@ -13,6 +13,7 @@
 *   **Electrical Substring Simulation**: Simulates bypass diode activation in three separate substrings per panel for realistic, non-linear shading performance loss.
 *   **Premium Interactive Viewport**: Responsive 3D scene built on React Three Fiber, OrbitControls, and clean shadows, featuring an overlay grid indicating exact shadow points.
 *   **Dual Light/Dark Theme**: A glassmorphic theme dashboard that seamlessly adapts from dark mode to a premium light theme.
+*   **Local Storage State Persistence**: Automatically persists the active solar array configurations, obstacle dimensions, simulation settings, and theme preferences across page reloads to prevent work loss on refresh.
 *   **Data Export**: Built-in CSV and JSON dataset exporters that download raw simulated panel parameters and hourly forecasts.
 
 ---
