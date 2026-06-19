@@ -163,7 +163,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             {/* Sidebar Controls with clean tab toggle */}
-            <div className="flex flex-col gap-4 lg:col-span-4 xl:col-span-3">
+            <div className="flex flex-col gap-5 lg:col-span-4 xl:col-span-4">
               <div className="flex backdrop-blur-md bg-white/40 dark:bg-slate-900/40 rounded-2xl p-1 border border-slate-200/40 dark:border-slate-800/40" role="tablist" aria-label="Sidebar control sections">
                 <button
                   id="tab-sun"
@@ -217,7 +217,7 @@ export default function Home() {
             </div>
 
             {/* 3D Viewport: 8 Columns on Large Screen */}
-            <div className="lg:col-span-8 xl:col-span-9 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/50 shadow-lg h-[360px] sm:h-[400px] lg:h-[490px] relative bg-slate-100 dark:bg-slate-950/20">
+            <div className="lg:col-span-8 xl:col-span-8 rounded-3xl overflow-hidden border border-slate-200/50 dark:border-slate-800/50 shadow-lg h-[320px] sm:h-[380px] lg:h-[440px] relative bg-slate-100 dark:bg-slate-950/20">
               <SceneViewer />
               
               {/* Overlay Instructions Badge */}
