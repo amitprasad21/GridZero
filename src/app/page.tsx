@@ -57,10 +57,18 @@ export default function Home() {
   // Accessible Live Region Ref
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
+  // Mounted state to prevent Next.js hydration mismatches
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Trigger recalculation on load to ensure state is synchronized
   useEffect(() => {
-    recalculate();
-  }, [recalculate]);
+    if (mounted) {
+      recalculate();
+    }
+  }, [recalculate, mounted]);
 
   // Trigger announcements whenever analytical outcomes recalculate (WAI-ARIA compliance)
   useEffect(() => {
@@ -72,6 +80,17 @@ export default function Home() {
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#070a13] tech-grid flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs font-mono text-slate-400">Loading Grid Zero Workspace...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import {
   Obstacle,
   SolarTable,
@@ -100,7 +101,9 @@ const takeSnapshot = (state: StoreData) => {
   };
 };
 
-export const useStore = create<StoreState>((set) => {
+export const useStore = create<StoreState>()(
+  persist(
+    (set) => {
   // Default Initial Scenario
   const initialTables: SolarTable[] = [
     {
@@ -670,4 +673,17 @@ export const useStore = create<StoreState>((set) => {
       set((state) => runUpdate({ ...state }));
     }
   };
-});
+}, {
+  name: 'gridzero-store-v1',
+  partialize: (state) => ({
+    tables: state.tables,
+    obstacles: state.obstacles,
+    simulationMode: state.simulationMode,
+    manualSun: state.manualSun,
+    autoDateTimestamp: state.autoDateTimestamp,
+    selectedLocation: state.selectedLocation,
+    simulationSpeed: state.simulationSpeed,
+    theme: state.theme,
+    houseModel: state.houseModel,
+  })
+}));
