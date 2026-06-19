@@ -1,4 +1,5 @@
 'use client';
+// Reverted codebase to premium glassmorphic UI layout (c95f2bd)
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useStore } from '../store/useStore';
